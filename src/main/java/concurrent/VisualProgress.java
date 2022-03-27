@@ -5,7 +5,7 @@ public class VisualProgress {
     public static void main(String[] args) throws InterruptedException {
         Thread progress = new Thread(new ConsoleProgress());
         progress.start();
-        Thread.sleep(1000);
+        Thread.sleep(5000);
         progress.interrupt();
     }
 
@@ -20,9 +20,9 @@ public class VisualProgress {
                 while (!isStop) {
                     for (int i = 0; i < 4; i++) {
                         System.out.print("\rLoading... " + process[i]);
+                        Thread.sleep(200);
+                        isStop = Thread.currentThread().isInterrupted();
                     }
-                    Thread.sleep(500);
-                    isStop = Thread.currentThread().isInterrupted();
                 }
             } catch (InterruptedException e) {
                 System.out.println("\nThread has been interrupted!");
