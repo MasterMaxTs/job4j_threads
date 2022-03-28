@@ -11,23 +11,20 @@ public class VisualProgress {
 
     private static class ConsoleProgress implements Runnable {
 
-        boolean isStop = false;
-
         @Override
         public void run() {
             String[] process = new String[]{"-", "\\", "|", "/"};
             try {
-                while (!isStop) {
-                    for (int i = 0; i < 4; i++) {
-                        System.out.print("\rLoading... " + process[i]);
-                        Thread.sleep(200);
-                        isStop = Thread.currentThread().isInterrupted();
+                int index = 0;
+                while (!Thread.currentThread().isInterrupted()) {
+                    System.out.print("\rLoading... " + process[index++]);
+                    Thread.sleep(500);
+                    if (index == process.length) {
+                        index = 0;
                     }
                 }
             } catch (InterruptedException e) {
-                System.out.println("\nThread has been interrupted!");
                 e.printStackTrace();
-                isStop = true;
             }
         }
     }
