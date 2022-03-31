@@ -10,50 +10,60 @@ public class Wget implements Runnable {
 
     private final String url;
     private final int speed;
-    private static String path = "";
+    private static String path;
 
     public Wget(String url, int speed) {
         this.url = url;
         this.speed = speed;
+        path = getPathFromUrl(url);
     }
 
     @Override
     public void run() {
+        long timeBegin = System.currentTimeMillis();
         try (BufferedInputStream bis =
                      new BufferedInputStream(
                              new URL(url).openStream());
              FileOutputStream fos = new FileOutputStream(path)) {
             byte[] dataBuffer = new byte[1024];
-            long timeStart0 = System.currentTimeMillis();
-            long timeStart = timeStart0;
-            long timeFinish;
+            long timeStart = timeBegin;
             int bytesRead;
-            long delay;
+            int downloadData = 0;
+            int count = 1;
+            long delta;
             while ((bytesRead = bis.read(dataBuffer, 0, 1024)) != -1) {
-                timeFinish = System.currentTimeMillis();
+                downloadData += bytesRead;
+                if (downloadData >= speed * count) {
+                    long timeFinish = System.currentTimeMillis();
+                    delta = timeFinish - timeStart;
+                    if (delta < 1000) {
+                        Thread.sleep(1000 - delta);
+                        downloadData = 0;
+                        count = 0;
+                    }
+                    timeStart = System.currentTimeMillis();
+                    count++;
+                }
                 fos.write(dataBuffer, 0, bytesRead);
-                delay = getDelay(timeStart, timeFinish);
-                Thread.sleep(delay);
-                timeStart = timeFinish;
             }
-            getResultInfo(timeStart0);
+            getResultInfo(timeBegin);
         } catch (IOException | InterruptedException e) {
             Thread.currentThread().interrupt();
         }
     }
 
-    private long getDelay(long timeStart, long timeFinish) {
-        long koe =  1000L * 1024 / speed;
-        return timeFinish - timeStart < koe ? koe : 0;
+    private String getPathFromUrl(String url) {
+        String[] arr = url.split("/");
+        return arr[arr.length - 1];
     }
 
-    private void getResultInfo(long timeStart) {
+    private void getResultInfo(long timeBegin) {
         String ls = System.lineSeparator();
         System.out.printf("file uploaded successfully within %d millis.%s",
-                System.currentTimeMillis() - timeStart, ls);
+                System.currentTimeMillis() - timeBegin, ls);
     }
 
-    public static void getInputInfo(String arg0, int arg1, String path) {
+    public static void getFileInfo(String arg0, int arg1) {
         String ls = System.lineSeparator();
         File file = new File(path);
         System.out.printf("Input parameters > URL : %s ;"
@@ -62,12 +72,11 @@ public class Wget implements Runnable {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        path = "pom_tmp.xml";
         String url = args[0];
         int speed = Integer.parseInt(args[1]);
         Thread wget = new Thread(new Wget(url, speed));
         wget.start();
         wget.join();
-        getInputInfo(url, speed, path);
+        getFileInfo(url, speed);
     }
 }
