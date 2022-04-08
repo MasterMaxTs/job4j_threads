@@ -19,7 +19,7 @@ public class ParseFile {
                         new FileInputStream(file)
                 )) {
             int data;
-            while ((data = bis.read()) > 0) {
+            while ((data = bis.read()) != -1) {
                 if (filter.test((char) data)) {
                     builder.append(data);
                 }
