@@ -12,7 +12,7 @@ public class UserStorage {
     private final Map<Integer, User> stoge;
 
     public UserStorage() {
-        stoge = new HashMap<>();
+        stoge = new TreeMap<>();
     }
 
     public synchronized boolean add(User user) {
