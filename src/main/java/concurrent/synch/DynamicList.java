@@ -48,5 +48,4 @@ public class DynamicList<T> implements List<T> {
             }
         };
     }
-
 }
