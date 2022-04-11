@@ -29,14 +29,14 @@ public class UserStorage {
 
     public synchronized boolean transfer(int fromId, int toId, int amount) {
         boolean rsl = false;
-            if (stoge.containsKey(fromId) && stoge.containsKey(toId)) {
-                User userFrom = stoge.get(fromId);
+        User userFrom = stoge.get(fromId);
+        User userTo = stoge.get(toId);
+            if (userFrom != null && userTo != null) {
                 int amountFrom = userFrom.getAmount();
                 if (amountFrom >= amount) {
                     userFrom.setAmount(amountFrom - amount);
-                    update(userFrom);
-                    User userTo = stoge.get(toId);
                     userTo.setAmount(userTo.getAmount() + amount);
+                    update(userFrom);
                     update(userTo);
                     rsl = true;
                 }
