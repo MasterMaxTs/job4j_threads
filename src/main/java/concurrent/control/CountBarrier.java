@@ -1,10 +1,16 @@
 package concurrent.control;
 
+import net.jcip.annotations.GuardedBy;
+import net.jcip.annotations.ThreadSafe;
+
+@ThreadSafe
 public class CountBarrier {
 
     private final Object monitor = this;
     private final int total;
-    private static int count = 0;
+
+    @GuardedBy("monitor")
+    private int count = 0;
 
     public CountBarrier(final int total) {
         this.total = total;
@@ -29,6 +35,12 @@ public class CountBarrier {
         }
     }
 
+    public int getCount() {
+        synchronized (monitor) {
+            return count;
+        }
+    }
+
     public static void main(String[] args) {
         CountBarrier countBarrier = new CountBarrier(2);
         Thread first = new Thread(
@@ -36,7 +48,7 @@ public class CountBarrier {
                     countBarrier.count();
                     System.out.println(Thread.currentThread().getName()
                             + " has incremented the counter value! Counter "
-                            + "value is " + count);
+                            + "value is " + countBarrier.getCount());
                 },
                 "Master1"
         );
@@ -45,7 +57,7 @@ public class CountBarrier {
                     countBarrier.count();
                     System.out.println(Thread.currentThread().getName()
                             + " has incremented the counter value! Counter "
-                            + "value is " + count);
+                            + "value is " + countBarrier.getCount());
                 },
                 "Master2"
         );
@@ -53,7 +65,7 @@ public class CountBarrier {
                 () -> {
                     countBarrier.await();
                     System.out.println(Thread.currentThread().getName()
-                    + "start! Counter value is " + count);
+                    + "start! Counter value is " + countBarrier.getCount());
                 },
                 "Slave"
         );
