@@ -3,8 +3,6 @@ package concurrent.synch;
 import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.util.Iterator;
 
 @ThreadSafe
@@ -14,7 +12,7 @@ public class SingleLockList<T> implements Iterable<T> {
     private final List<T> list;
 
     public SingleLockList(List<T> list) {
-        this.list = (List<T>) copy(list);
+        this.list = copy(list);
     }
 
     public synchronized void add(T value) {
@@ -30,21 +28,11 @@ public class SingleLockList<T> implements Iterable<T> {
         return list.iterator();
     }
 
-    private Object copy(Object list) {
-        Object rsl = null;
-        try {
-            Constructor constructor = list.getClass().getConstructor();
-            Object clone = constructor.newInstance();
-            Field[] fields = list.getClass().getDeclaredFields();
-            for (Field field
-                    : fields) {
-                field.setAccessible(true);
-                field.set(clone, field.get(list));
-            }
-            rsl = clone;
-        } catch (Exception e) {
-            e.printStackTrace();
+    private List<T> copy(List<T> list) {
+        DynamicList<T> clone = new DynamicList<>();
+        for (T element : list) {
+            clone.add(element);
         }
-        return rsl;
+        return clone;
     }
 }
