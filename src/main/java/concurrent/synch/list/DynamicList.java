@@ -1,4 +1,4 @@
-package concurrent.synch;
+package concurrent.synch.list;
 
 import java.util.*;
 

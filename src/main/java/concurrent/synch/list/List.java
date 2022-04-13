@@ -1,4 +1,4 @@
-package concurrent.synch;
+package concurrent.synch.list;
 
 public interface List<T> extends Iterable<T> {
 
