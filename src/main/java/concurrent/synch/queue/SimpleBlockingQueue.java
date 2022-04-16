@@ -33,7 +33,7 @@ public class SimpleBlockingQueue<T> {
         return queue.poll();
     }
 
-    public synchronized int size() {
-        return queue.size();
+    public synchronized boolean isEmpty() {
+        return queue.size() == 0;
     }
 }
