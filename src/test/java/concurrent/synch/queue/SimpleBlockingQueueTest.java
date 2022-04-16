@@ -12,37 +12,57 @@ public class SimpleBlockingQueueTest {
     private Thread producer2;
     private Thread consumer1;
     private Thread consumer2;
-    private Thread consumer3;
 
     @Before
     public void whenSetUp() {
         queue = new SimpleBlockingQueue<>(2);
         producer1 = new Thread(
                 () -> {
-                    queue.offer(1);
-                    queue.offer(2);
+                    try {
+                        queue.offer(1);
+                        queue.offer(2);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
         );
         producer2 = new Thread(
-                () -> queue.offer(3)
+                () -> {
+                    try {
+                        queue.offer(3);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
         );
-        consumer1 = new Thread(queue::poll);
-        consumer2 = new Thread(queue::poll);
-        consumer3 = new Thread(queue::poll);
+        consumer1 = new Thread(
+                () -> {
+                    try {
+                        queue.poll();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+        );
+        consumer2 = new Thread(
+                () -> {
+                    try {
+                        queue.poll();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+        );
     }
 
     @Test
     public void whenOfferAndAllPollThanEmpty() throws InterruptedException {
         producer1.start();
-        producer2.start();
         consumer1.start();
         consumer2.start();
-        consumer3.start();
         producer1.join();
-        producer2.join();
         consumer1.join();
         consumer2.join();
-        consumer3.join();
         assertThat(queue.size(), is(0));
     }
 
