@@ -19,7 +19,7 @@ public class CacheTest {
                 new Base(1, 1),
                 new Base(2, 1)
         );
-        cache = new Cache();
+        cache = Cache.getInstance();
     }
 
     @Test
@@ -51,5 +51,10 @@ public class CacheTest {
         cache.add(bases.get(1));
         cache.delete(bases.get(0));
         assertThat(cache.getBases(), is(List.of(bases.get(1))));
+    }
+
+    @Test
+    public void whenCreateTwoCacheInstanceThanSame() {
+        assertThat(Cache.getInstance(), is(cache));
     }
 }
