@@ -20,11 +20,10 @@ public class Cache {
         Base computeBase = memory.computeIfPresent(
                 model.getId(),
                 (k, v) -> {
-                    Base stored = memory.get(model.getId());
-                    if (stored.getVersion() != model.getVersion()) {
+                    if (v.getVersion() != model.getVersion()) {
                         throw new OptimisticException("Versions are not equal");
                     }
-                    model.setVersion(model.getVersion() + 1);
+                    v.setVersion(v.getVersion() + 1);
                     return memory.put(k, v);
                 }
         );
