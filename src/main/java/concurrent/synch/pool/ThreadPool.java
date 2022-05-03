@@ -2,39 +2,54 @@ package concurrent.synch.pool;
 
 import concurrent.synch.queue.SimpleBlockingQueue;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class ThreadPool {
 
-    private volatile boolean isRunning = true;
-    private final SimpleBlockingQueue<Runnable> tasks = new SimpleBlockingQueue<>(4);
-    private static final int SIZE = Runtime.getRuntime().availableProcessors();
+    private final List<Thread> threads = new LinkedList<>();
+    private final SimpleBlockingQueue<Runnable> tasks;
+    private static boolean isWork = true;
 
-    public ThreadPool() {
-        for (int i = 0; i < SIZE; i++) {
-            new Thread(
-                    new TaskWorker()
-            ).start();
+    public ThreadPool(int countThreads, int queueSize) {
+        tasks = new SimpleBlockingQueue<>(queueSize);
+        initThreads(countThreads);
+    }
+
+    private void initThreads(int countThreads) {
+        for (int i = 0; i < countThreads; i++) {
+            threads.add(new Thread(
+                    new TaskWorker())
+            );
         }
     }
 
-    public void work(Runnable job) {
-        try {
-            if (isRunning) {
-                tasks.offer(job);
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+    public void startThreads() {
+        for (Thread t
+                : threads) {
+            t.start();
         }
     }
 
     public void shutdown() {
-        isRunning = false;
+        for (Thread t
+                : threads) {
+            t.interrupt();
+        }
+        isWork = false;
+    }
+
+    public void work(Runnable job) throws InterruptedException {
+        if (isWork) {
+            tasks.offer(job);
+        }
     }
 
     private final class TaskWorker implements Runnable {
 
         @Override
         public void run() {
-            while (isRunning) {
+            while (!Thread.currentThread().isInterrupted()) {
                 try {
                     Runnable nextTask = tasks.poll();
                     if (nextTask != null) {
@@ -42,6 +57,7 @@ public class ThreadPool {
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
+                    Thread.currentThread().interrupt();
                 }
             }
         }
