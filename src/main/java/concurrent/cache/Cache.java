@@ -12,15 +12,6 @@ public class Cache {
 
     private final Map<Integer, Base> memory = new ConcurrentHashMap<>();
 
-    private Cache() {
-
-    }
-
-    /* Init cache instance. Lazy loading*/
-    public static Cache getInstance() {
-        return Holder.INSTANCE;
-    }
-
     public boolean add(Base model) {
         return memory.putIfAbsent(model.getId(), model) != null;
     }
@@ -45,10 +36,5 @@ public class Cache {
 
     public List<Base> getBases() {
         return new ArrayList<>(memory.values());
-    }
-
-    private static class Holder {
-
-        private static final Cache INSTANCE = new Cache();
     }
 }
