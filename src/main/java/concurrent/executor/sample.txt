@@ -1,0 +1,2 @@
+subject=Notification {username} to email {email}.
+body=Add a new event to {username}
