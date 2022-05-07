@@ -37,10 +37,12 @@ public class EmailNotification {
 
     public void close() {
         pool.shutdown();
-        try {
-            pool.awaitTermination(10000, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        while (!pool.isTerminated()) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
