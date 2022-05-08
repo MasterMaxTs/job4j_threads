@@ -1,4 +1,4 @@
-package concurrent.executor;
+package concurrent.pools.executor;
 
 public class User {
 

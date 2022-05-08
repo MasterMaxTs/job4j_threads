@@ -1,4 +1,4 @@
-package concurrent.executor;
+package concurrent.pools.executor;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -9,8 +9,8 @@ import java.util.concurrent.Executors;
 public class EmailNotification {
 
     private final ExecutorService pool;
-    private final static String FILE = "./src/main/java/concurrent/executor"
-            + "/sample.txt";
+    private final static String FILE = "./src/main/java/concurrent/pools/"
+            + "executor/sample.txt";
 
     public EmailNotification(ExecutorService pool) {
         this.pool = pool;
